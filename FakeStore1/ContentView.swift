@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var viewModel = ProductViewModel()
+    @StateObject var userViewModel = UserViewModel()
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            
+            
+            ProductGridView(viewModel: viewModel)
+            
+            
         }
-        .padding()
+       
     }
 }
 
