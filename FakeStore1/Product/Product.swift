@@ -15,19 +15,23 @@ struct ProductResponse: Codable {
 }
 
 
+
+
+
 struct Product: Codable, Identifiable {
     let id: Int
     let title: String
-    let image: String
-    let price: Double  // Changed from Int to Double
-    let description: String
+    let image: String // Optional if missing
+    let price: Double // Optional if missing
+    let description: String // Optional if missing
     let brand: String
     let model: String
-    let color: String?  // Optional because it might be missing
+    let color: String // Optional because it might be missing
     let category: String
-    let discount: Int?
+    let discount: String
     let popular: Bool?
     let onSale: Bool?
 }
+
 
 

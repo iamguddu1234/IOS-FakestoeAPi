@@ -4,10 +4,21 @@ import Combine
 class ProductViewModel: ObservableObject {
     
     @Published var products: [Product] = []
+    
+    
+    @Published var isSubmitting = false
+    @Published var successMessage : String?
+    
     @Published var isLoading = false
     @Published var errorMessage: String?
     
     private var cancellables = Set<AnyCancellable>()
+    
+    
+    
+    
+    
+    
     
     func getAllProduct() {
         guard let url = URL(string: "https://fakestoreapi.in/api/products") else {
@@ -92,5 +103,68 @@ class ProductViewModel: ObservableObject {
             })
             .store(in: &cancellables)
         
+    }
+    
+    // Add a new product
+    func addProduct(title: String, brand: String, model: String, color: String, category: String, discount: String) {
+        let urlString = "https://fakestoreapi.in/api/products"
+        guard let url = URL(string: urlString) else {
+            self.errorMessage = "Invalid URL"
+            return
+        }
+        
+        // Validate the discount value
+        if let discountValue = Double(discount), discountValue.isNaN {
+            self.errorMessage = "Invalid discount value"
+            return
+        }
+        
+        // Prepare product data
+        let productData: [String: Any] = [
+            "title": title,
+            "brand": brand,
+            "model": model,
+            "color": color,
+            "category": category,
+            "discount": discount  // Discount is now directly sent as a string
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: productData) else {
+            self.errorMessage = "Failed to encode product data"
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        isSubmitting = true
+        errorMessage = nil
+        successMessage = nil
+        
+        URLSession.shared.dataTaskPublisher(for: request)
+            .map { $0.data }
+            .decode(type: AddProductResponse.self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    self.errorMessage = "Failed to add product: \(error.localizedDescription)"
+                }
+            }, receiveValue: { response in
+                // Log the full response for debugging
+                print("Response JSON: \(response)")
+                
+                // Handle the response
+                if response.status == "SUCCESS" {
+                    self.successMessage = response.message
+                } else {
+                    self.errorMessage = "Failed to add product: \(response.message)"
+                }
+            })
+            .store(in: &cancellables)
     }
 }

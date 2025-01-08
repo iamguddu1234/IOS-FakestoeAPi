@@ -1,7 +1,8 @@
 struct UserResponse: Codable {
     let status: String
     let message: String
-    let users: [User]
+    let users: [User]? // Make this optional for add user case
+    let user: User? // Add this field for add user case
 }
 
 struct User: Codable, Identifiable {
