@@ -5,6 +5,24 @@ struct UserResponse: Codable {
     let user: User? // Add this field for add user case
 }
 
+//struct User: Codable, Identifiable,  Equatable {
+//    let id: Int
+//    let email: String
+//    let username: String
+//    let password: String
+//    let name: Name
+//    let address: Address
+//    let phone: String
+//    
+//    
+//    //EQUATABLE USE FOR PAGINATION
+//    // Conform to Equatable to compare users
+//    static func == (lhs: User, rhs: User) -> Bool {
+//        return lhs.id == rhs.id
+//    }
+//}
+
+
 struct User: Codable, Identifiable {
     let id: Int
     let email: String
